@@ -60,7 +60,9 @@
 
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-success">修改</button>
+                        <!-- <button type="submit" class="btn btn-success">修改</button> -->
+                        <input type="submit" class="btn btn-success" >
+                        
                     </div>
                 </div>
             </form>
@@ -113,7 +115,7 @@
                 var icon = this.files[0];
                 console.log(icon);
                 var url = URL.createObjectURL(icon);
-                $('.user_pic').attr('src',url);
+                $('.user_pic').attr('src', url);
             });
 
             // 点击修改,获取用户输入的信息,发送ajax请求
@@ -137,13 +139,23 @@
                             $('.modal-body').text('修改成功是否返回首页');
                             $('#myModal').modal({
                             });
-                            $('.btn_que').on('click', function () {
-                                window.open('./index.html', blank = "self");
+                        } else {
+                             $('.modal-body').text('修改失败');
+                            $('#myModal').modal({
                             });
-                        }
-
+                            $('.btn_que').hide(); 
+                         }
+                        $('.btn_que').on('click', function () {
+                            window.open('./index.html', blank = "self");
+                            // parent.window.location.reload();
+                         
+                            
+                        });
+                       
+ 
                     }
                 });
+              
             });
         });
     </script>
