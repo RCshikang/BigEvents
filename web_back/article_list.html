@@ -298,10 +298,7 @@
             {{/each}}
     </script>
     <script>
-        // 设置左侧菜单
-        $('#release_btn').click(function () {
-            window.parent.setMenu(1, 1);
-        })
+       
         $(function () {
 
             // 进入页面文章类别搜索,发送ajax请求获取数据渲染到页面上
@@ -359,7 +356,7 @@
                         console.log(backData);
                         if (backData.code == 200) {
                             that.parent().parent().remove();
-                        }else {
+                        } else {
                             alert('删除失败');
                         }
                     }
