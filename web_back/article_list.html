@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="css/main.css">
     <script src="js/jquery-1.12.4.min.js"></script>
     <script src="js/template-web.js"></script>
+    <script src="./js/bootstrap/js/bootstrap.min.js"></script>
+    <script src="./js/jquery.twbsPagination.js"></script>
 </head>
 
 <body>
@@ -270,7 +272,7 @@
     </div>
 
     <script id="tem_select" type="text/html">
-        <option value=" ">所有分类</option>
+        <option value="">所有分类</option>
         {{each data}}
         <option value={{$value.id}}>{{$value.name}}</option>
         {{/each}}
@@ -298,7 +300,7 @@
             {{/each}}
     </script>
     <script>
-       
+
         $(function () {
 
             // 进入页面文章类别搜索,发送ajax请求获取数据渲染到页面上
@@ -314,9 +316,31 @@
                 }
             });
 
-            // 点击筛选,获取当前类别的数据,渲染页面
-            $('#btnSearch').on('click', function (e) {
-                e.preventDefault();
+            var myTotalPage = 10;
+
+            //分页功能
+            //onPageClick事件,是单击页签会执行的事件.
+            var $pagination = $('.pagination');
+            var defaultOpts = {
+                totalPages: myTotalPage,
+                visiblePages: 10,
+                first: '首页',
+                prev: "上一页",
+                next: "下一页",
+                last: "尾页",
+                onPageClick: function (event, page) {
+                    //console.log(event); //代表的当前点击事件.
+                    //console.log(page);  //代表的是当前点击的页码 
+                    //需求: 点击页码,发送ajax请求,找到对应页码的数据. 
+                    //也是调用getData方法.
+                    getData(page);
+                }
+
+            };
+            $pagination.twbsPagination(defaultOpts);
+
+            // 定义一个函数封装
+            function getData(myPage) {
                 var selCategory = $('#selCategory').val();
                 var selStatus = $('#selStatus').val();
                 // 发送ajax请求
@@ -325,7 +349,7 @@
                     data: {
                         type: selCategory,
                         state: selStatus,
-                        page: 1,
+                        page: myPage,
                         perpage: 10
                     },
                     success: function (backData) {
@@ -333,13 +357,36 @@
                         if (backData.code == 200) {
                             var resHtml = template('tem_date', backData);
                             $('tbody').html(resHtml);
+
+                            //因为ajax发送请求成功后才会得到真实的总页码, 
+                            //所以根据真实的总页码生成真实的页签条代码才应该放在这里
+                            var totalPages = backData.totalPage; //获取真实的总页码数.
+                            console.log(totalPages);
+                            if (myTotalPage != totalPages) {
+                                myTotalPage = totalPages; //把查询出来的真实的总页码数显示在页码条上.
+
+                                var currentPage = $pagination.twbsPagination('getCurrentPage');
+                                //有一个问题,就是分页插件调用destroy方法的时候,会自动的去调用onPageClick事件.所以就无限循环了.
+                                $pagination.twbsPagination('destroy');
+                                $pagination.twbsPagination($.extend({}, defaultOpts, {
+                                    // startPage: currentPage, //这句话的意思是以当前页作为开始页.
+                                    startPage: 1,
+                                    totalPages: totalPages
+                                }));
+                            }
+
                         }
                     }
                 });
+            };
+            //点击筛选按钮搜索文章
+            $('#btnSearch').on('click', function (e) {
+                e.preventDefault();
+                //调用getData()方法.
+                getData(1);
 
             });
-            // 进入页面调用筛选点击事件
-            $('#btnSearch').trigger('click');
+
 
             // 点击删除,发送ajax请求,
             $('tbody').on('click', '.btn-delet', function (e) {
@@ -362,6 +409,10 @@
                     }
                 });
             });
+
+
+
+
         });
     </script>
 

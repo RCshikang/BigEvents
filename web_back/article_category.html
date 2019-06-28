@@ -243,7 +243,10 @@
                             console.log(backData);
                             if (backData.code == 200) {
                                 $('#addModal').modal('hide');
-                                var res = template('tem_one', { taxon: userTaxon, alias: userAlias });
+                                var res = template('tem_one', {
+                                    taxon: userTaxon,
+                                    alias: userAlias
+                                });
                                 $('tbody').append(res);
                                 $('.taxon').val('');
                                 $('.alias').val('');
