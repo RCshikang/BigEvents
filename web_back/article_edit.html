@@ -15,6 +15,7 @@
     <script src="js/jedate/js/jedate.js"></script>
     <script src="js/tinymce/js/tinymce/tinymce.min.js"></script>
     <script src="js/tinymce/js/tinymce_setup.js"></script>
+    <script src="./js/bootstrap/js/bootstrap.min.js"></script>
 </head>
 
 <body>
@@ -24,7 +25,7 @@
         </div>
         <div class="container-fluid common_con">
             <form class="form-horizontal article_form">
-                <input type="text" name="id" class="id">
+                <input type="hidden" name="id" class="id">
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章标题：</label>
                     <div class="col-sm-10">
@@ -79,6 +80,25 @@
             </form>
         </div>
     </div>
+     <!-- Modal -->
+     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">温馨提示</h4>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">退出</button>
+                    <button type="button" class="btn btn-primary btn_que" >确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 <script src="./js/template-web.js"></script>
@@ -91,7 +111,7 @@
     $(function () {
         // 进入页面文章类别搜索,发送ajax请求获取数据渲染到页面上
         $.ajax({
-            url: 'http://localhost:8000/admin/category_search',
+            url: 'http://localhost:8000/admin/category_search',     
             success: function (backData) {
                 console.log(backData);
                 if (backData.code == 200) {
@@ -103,6 +123,8 @@
         });
 
         var id = window.location.search.split('?')[1];
+        console.log(id);
+        
         // 通过id发送ajax请求,渲染页面
         $.ajax({
             url: 'http://localhost:8000/admin/search',
@@ -129,16 +151,29 @@
         $('.btn-edit').on('click', function (e) {
             e.preventDefault();
             // console.log($('.id').val(id));
-            var data = $('form').serialize();
+            var formdata = new FormData($('form')[0]);
+            // console.log(formdata.get('content'));
+            
 
-            console.log(data);
+            console.log(formdata);
             $.ajax({
                 type: 'post',
                 url: 'http://localhost:8000/admin/article_edit',
-                data: data,
+                data: formdata,
+                contentType:false,
+                processData:false,
                 success: function (backData) {
                     console.log(backData);
-
+                    if(backData.code=200){
+                        $('#myModal').modal({
+                            });
+                            $('.modal-body').text('修改,是否返回文章列表');
+                           
+                            $('.btn_que').on('click', function (e) {
+                                e.preventDefault();
+                                location.href = './article_list.html';
+                            });
+                    }
                 }
             });
         });
